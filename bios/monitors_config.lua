@@ -32,6 +32,7 @@ end
 -- Menu interactif sur monitors et terminal
 function monitors_config.menu(monitors, options)
     local choice = 1
+
     local function redraw()
         term.clear()
         term.setCursorPos(1,1)
@@ -48,25 +49,29 @@ function monitors_config.menu(monitors, options)
     end
 
     redraw()
+
     while true do
-        local event, param1, param2, param3 = os.pullEvent()
+        local event, p1, p2, p3 = os.pullEvent()
+        
         if event == "key" then
-            if param1 == keys.up then
+            if p1 == keys.up then
                 choice = choice - 1
                 if choice < 1 then choice = #options end
-            elseif param1 == keys.down then
+            elseif p1 == keys.down then
                 choice = choice + 1
                 if choice > #options then choice = 1 end
-            elseif param1 == keys.enter then
+            elseif p1 == keys.enter then
                 return choice
             end
+            redraw()
+
         elseif event == "monitor_touch" then
-            local side, x, y = param1, param2, param3
+            local side, x, y = p1, p2, p3
             if y >= 1 and y <= #options then
                 choice = y
+                redraw()
             end
         end
-        redraw()
     end
 end
 
