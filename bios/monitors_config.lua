@@ -71,12 +71,10 @@ function monitors_config.menu(monitors, options, callback)
         elseif event == "monitor_touch" then
             local side, x, y = p1, p2, p3
             if y >= 1 and y <= #options then
-                -- Si double-clic rapide sur la même ligne
+                choice = y -- Déplacer le curseur d'abord
                 local now = os.clock()
                 if lastY == y and (now - lastClick) < 0.5 and callback then
-                    return callback(choice) -- Exécuter l'option
-                else
-                    choice = y -- Déplacer le curseur
+                    return callback(choice) -- Exécuter l'option correcte
                 end
                 lastClick = now
                 lastY = y
