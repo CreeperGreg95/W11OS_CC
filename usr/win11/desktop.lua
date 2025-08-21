@@ -1,46 +1,87 @@
 -- ========================/usr/win11/desktop.lua====================
-if inst.draw then inst.draw(winObj) end
-end,
-onEvent=function(ev,...) if inst.onEvent then return inst.onEvent(ev, ...) end end
+local UI = __WIN11__.UI
+local WM = __WIN11__.WM
+
+local Desktop = {}
+__WIN11__.Desktop = Desktop
+
+-- Paramètres du bureau
+local taskbarHeight = 2
+local pinned = {
+    {label="App1", app="/usr/win11/apps/app1.lua"},
+    {label="App2", app="/usr/win11/apps/app2.lua"}
 }
-if inst.onOpen then inst.onOpen(win) end
-end
 
+local startOpen = false
 
--- boucle d'événements
-UI.reset()
-WM.redraw()
-while true do
-local ev = { os.pullEvent() }
-local name = ev[1]
-if name=="mouse_click" then
-local btn,x,y = ev[2], ev[3], ev[4]
-local tbY = H - __WIN11__.taskbarHeight + 1
-if y==tbY then
--- bouton Start
-if x>=2 and x<12 then startOpen = not startOpen; WM.redraw()
-else
--- icônes épinglées
-for _,p in ipairs(pinned) do
-if x>=p._x and x<p._x+p._w then startOpen=false; WM.redraw(); launch(p.app, p.label) end
-end
-end
-elseif startOpen then
--- clic dans le menu démarrer
-for _,item in ipairs(pinned) do
-if y==item._sy and x>=item._sx and x<item._sx+item._sw then startOpen=false; WM.redraw(); launch(item.app, item.label) end
-end
-else
--- transmettre au WM
-if not WM.dispatch(ev[1], ev[2],ev[3],ev[4],ev[5]) then
--- rien
-end
-end
-else
-if not WM.dispatch(ev[1], ev[2],ev[3],ev[4],ev[5]) then
--- redraw périodique pour l'horloge
-if name=="timer" or name=="term_resize" then WM.redraw() end
-end
-end
-end
+-- Initialisation du Desktop
+function Desktop.init()
+    local self = {}
+
+    local w, h = term.getSize()
+
+    -- Fonction pour lancer une application
+    local function launch(path, label)
+        if fs.exists(path) then
+            WM.spawn(label, function()
+                dofile(path)
+            end)
+        end
+    end
+
+    -- Redessiner le bureau
+    function self:draw()
+        -- Fond du bureau
+        term.setBackgroundColor(colors.lightBlue)
+        term.clear()
+
+        -- Barre des tâches
+        UI.fill(1, h-taskbarHeight+1, w, taskbarHeight, colors.gray)
+        UI.text(2, h-taskbarHeight+1, "Start", colors.white)
+
+        -- Icônes épinglées
+        local x = 12
+        for _,p in ipairs(pinned) do
+            p._x = x
+            p._w = #p.label + 2
+            UI.text(x, h-taskbarHeight+1, p.label, colors.white)
+            x = x + p._w + 1
+        end
+
+        -- Fenêtres
+        WM.draw()
+    end
+
+    -- Gestion des événements
+    function self:handle(ev)
+        local name = ev[1]
+        if name == "mouse_click" then
+            local btn, x, y = ev[2], ev[3], ev[4]
+            local tbY = h - taskbarHeight + 1
+
+            if y == tbY then
+                -- Bouton Start
+                if x >=2 and x < 12 then
+                    startOpen = not startOpen
+                    self:draw()
+                    return
+                end
+
+                -- Icônes épinglées
+                for _,p in ipairs(pinned) do
+                    if x >= p._x and x < p._x + p._w then
+                        startOpen = false
+                        self:draw()
+                        launch(p.app, p.label)
+                        return
+                    end
+                end
+            end
+        end
+
+        -- Envoyer les autres événements au WM
+        WM.handle(ev)
+    end
+
+    return self
 end
