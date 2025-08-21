@@ -1,6 +1,4 @@
 -- ========================/usr/win11/desktop.lua====================
-local WM = dofile("/usr/win11/wm.lua")
-
 local Desktop = {}
 
 local taskbarHeight = 2
@@ -13,7 +11,8 @@ local startOpen = false
 function Desktop.init()
     local self = {}
     local w, h = term.getSize()
-    local UI = __WIN11__.UI  -- récupère UI depuis __WIN11__
+    local UI = __WIN11__.UI
+    local WM = __WIN11__.WM
 
     local function launch(path, label)
         if fs.exists(path) then
