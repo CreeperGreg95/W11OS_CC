@@ -25,6 +25,7 @@ function monitors_config.writeAll(monitors, y, text)
     print(text)
     for _, m in pairs(monitors) do
         m.setCursorPos(1, y)
+        m.clearLine()
         m.write(text)
     end
 end
@@ -46,18 +47,22 @@ function monitors_config.menu(monitors, options)
             print(line)
             for _, m in pairs(monitors) do
                 m.setCursorPos(1, i)
+                m.clearLine()
                 m.write(line)
             end
         end
 
-        -- Affichage bouton [Valider] en bas à droite
+        -- Affichage bouton [ Valider ] en bas à droite
         for _, m in pairs(monitors) do
             local w, h = m.getSize()
             m.setCursorPos(w - 9, h) -- 9 = longueur du texte "[ Valider ]"
+            m.clearLine()
             m.write("[ Valider ]")
         end
+
+        -- Terminal local
         term.setCursorPos(1, #options + 2)
-        print("Appuyez sur Enter pour valider")
+        print("[ Valider ] (Appuyez Enter pour valider)")
     end
 
     redraw()
