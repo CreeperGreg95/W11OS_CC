@@ -1,44 +1,51 @@
 -- =========================/usr/win11/wm.lua========================
-restore()
-end
-end
-__WIN11__.drawTaskbar()
+-- Window Manager: gestion des fenêtres, titres, boutons
+local WM = {}
+__WIN11__.WM = WM
+
+WM.windows = {}
+WM.active  = nil
+
+function WM.spawn(title,app)
+  local w,h = term.getSize()
+  local win = window.create(term.current(), 2, 3, w-2, h-5, true)
+  local obj = {title=title, win=win, x=2, y=3, w=w-2, h=h-5, app=app}
+  table.insert(WM.windows, obj)
+  WM.active = obj
+  return obj
 end
 
+function WM.draw()
+  for i,obj in ipairs(WM.windows) do
+    -- barre de titre
+    __WIN11__.UI.frame(obj.x,obj.y,obj.w,obj.h,obj.title,colors.gray,colors.white)
+    -- boutons
+    __WIN11__.UI.text(obj.x+obj.w-4,obj.y,"_",colors.white,colors.gray)
+    __WIN11__.UI.text(obj.x+obj.w-2,obj.y,"X",colors.white,colors.gray)
+    -- contenu
+    obj.win.setVisible(true)
+  end
+end
 
-local dragging = nil
+function WM.close(obj)
+  for i,v in ipairs(WM.windows) do
+    if v==obj then
+      table.remove(WM.windows,i)
+      break
+    end
+  end
+end
 
-
-function WM.dispatch(ev, p1,p2,p3,p4)
-if ev=="mouse_click" then
-local btn,x,y = p1,p2,p3
--- barre de titre / boutons
-for i=#WM.windows,1,-1 do
-local w = WM.windows[i]
-if not w.minimized and x>=w.x and x<w.x+w.w and y>=w.y and y<w.y+w.h then
-WM.raise(w.id)
-if y==w.y then
-if x==w.x+w.w-1 then WM.close(w.id) return true
-elseif x==w.x+w.w-3 then WM.minToggle(w.id) return true
-else dragging = {w=w, dx=x-w.x, dy=y-w.y} return true end
-else
-if w.onEvent then w.onEvent(ev, btn, x-w.x+1, y-w.y+1) end
-return true
-end
-end
-end
-elseif ev=="mouse_drag" and dragging then
-local _,x,y = p1,p2,p3
-local w = dragging.w
-w.x = math.max(1, math.min(x - dragging.dx, term.getSize()))
-w.y = math.max(1, math.min(y - dragging.dy, term.getSize()))
-WM.redraw()
-return true
-elseif ev=="mouse_up" and dragging then dragging = nil return true
-else
--- route vers fenêtre focussée
-for i=#WM.windows,1,-1 do local w=WM.windows[i]; if not w.minimized and w.id==WM.focused and w.onEvent then
-if w.onEvent(ev,p1,p2,p3,p4) then return true end
-end end
-end
+function WM.handle(ev)
+  if ev[1]=="mouse_click" then
+    local _,btn,x,y = table.unpack(ev)
+    for _,obj in ipairs(WM.windows) do
+      if y==obj.y and x>=obj.x+obj.w-4 and x<=obj.x+obj.w-2 then
+        -- bouton fermer
+        WM.close(obj)
+        return true
+      end
+    end
+  end
+  return false
 end
