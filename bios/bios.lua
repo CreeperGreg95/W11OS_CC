@@ -1,4 +1,4 @@
--- BIOS complet pour CraftOS 1.8 avec support monitors (double-clic)
+-- BIOS complet pour CraftOS 1.8 avec support monitors (clic + Enter)
 
 -- Charger la config monitors
 local monitors_config = dofile("/bios/monitors_config.lua")
@@ -27,19 +27,20 @@ for _, side in ipairs({"top","bottom","left","right","front","back"}) do
 end
 sleep(1)
 
--- Menu de démarrage avec double-clic
-monitors_config.menu(monitors, {"Lancer le shell", "Redémarrer", "Éteindre"}, function(choice)
-    if choice == 1 then
-        monitors_config.writeAll(monitors, 1, "Lancement du shell...")
-        sleep(0.5)
-        shell.run("/rom/programs/shell.lua")
-    elseif choice == 2 then
-        monitors_config.writeAll(monitors, 1, "Redémarrage...")
-        sleep(0.5)
-        os.reboot()
-    elseif choice == 3 then
-        monitors_config.writeAll(monitors, 1, "Extinction...")
-        sleep(0.5)
-        os.shutdown()
-    end
-end)
+-- Menu de démarrage
+local choice = monitors_config.menu(monitors, {"Lancer le shell", "Redémarrer", "Éteindre"})
+
+-- Exécution
+if choice == 1 then
+    monitors_config.writeAll(monitors, 1, "Lancement du shell...")
+    sleep(0.5)
+    shell.run("/rom/programs/shell.lua")
+elseif choice == 2 then
+    monitors_config.writeAll(monitors, 1, "Redémarrage...")
+    sleep(0.5)
+    os.reboot()
+elseif choice == 3 then
+    monitors_config.writeAll(monitors, 1, "Extinction...")
+    sleep(0.5)
+    os.shutdown()
+end

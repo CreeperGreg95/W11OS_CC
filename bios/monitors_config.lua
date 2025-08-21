@@ -1,5 +1,5 @@
 -- monitors_config.lua
--- Gestion des monitors pour BIOS et OS (clic gauche = déplacer, double-clic = exécuter)
+-- Gestion des monitors pour BIOS et OS (clic = déplacer, Enter = exécuter)
 
 local monitors_config = {}
 
@@ -30,11 +30,9 @@ function monitors_config.writeAll(monitors, y, text)
 end
 
 -- Menu interactif sur monitors et terminal
--- callback(option_index) est appelé si l'option est exécutée (double-clic)
-function monitors_config.menu(monitors, options, callback)
+-- Renvoie l'option sélectionnée (clic = déplacer, Enter = valider)
+function monitors_config.menu(monitors, options)
     local choice = 1
-    local lastClick = 0
-    local lastY = 0
 
     local function redraw()
         term.clear()
@@ -55,29 +53,22 @@ function monitors_config.menu(monitors, options, callback)
 
     while true do
         local event, p1, p2, p3 = os.pullEvent()
-        
         if event == "key" then
             if p1 == keys.up then
                 choice = choice - 1
                 if choice < 1 then choice = #options end
+                redraw()
             elseif p1 == keys.down then
                 choice = choice + 1
                 if choice > #options then choice = 1 end
-            elseif p1 == keys.enter and callback then
-                return callback(choice)
+                redraw()
+            elseif p1 == keys.enter then
+                return choice
             end
-            redraw()
-
         elseif event == "monitor_touch" then
             local side, x, y = p1, p2, p3
             if y >= 1 and y <= #options then
-                choice = y -- Déplacer le curseur d'abord
-                local now = os.clock()
-                if lastY == y and (now - lastClick) < 0.5 and callback then
-                    return callback(choice) -- Exécuter l'option correcte
-                end
-                lastClick = now
-                lastY = y
+                choice = y
                 redraw()
             end
         end
