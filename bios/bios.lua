@@ -1,4 +1,4 @@
--- BIOS complet pour CraftOS 1.8 avec support monitors (clic + Enter)
+-- BIOS complet pour CraftOS 1.8 avec support monitors et bouton Valider
 
 -- Charger la config monitors
 local monitors_config = dofile("/bios/monitors_config.lua")

@@ -1,5 +1,5 @@
 -- monitors_config.lua
--- Gestion des monitors pour BIOS et OS (clic = déplacer, Enter = exécuter)
+-- Gestion des monitors pour BIOS et OS (clic = déplacer, bouton Valider = exécuter)
 
 local monitors_config = {}
 
@@ -30,7 +30,7 @@ function monitors_config.writeAll(monitors, y, text)
 end
 
 -- Menu interactif sur monitors et terminal
--- Renvoie l'option sélectionnée (clic = déplacer, Enter = valider)
+-- Renvoie l'option sélectionnée (clic = déplacer, bouton Valider = exécuter)
 function monitors_config.menu(monitors, options)
     local choice = 1
 
@@ -38,6 +38,8 @@ function monitors_config.menu(monitors, options)
         term.clear()
         term.setCursorPos(1,1)
         for _, m in pairs(monitors) do m.clear() end
+
+        -- Affichage des options
         for i, opt in ipairs(options) do
             local line = (i == choice) and ("> "..opt) or ("  "..opt)
             term.setCursorPos(1, i)
@@ -47,6 +49,15 @@ function monitors_config.menu(monitors, options)
                 m.write(line)
             end
         end
+
+        -- Affichage bouton [Valider] en bas à droite
+        for _, m in pairs(monitors) do
+            local w, h = m.getSize()
+            m.setCursorPos(w - 9, h) -- 9 = longueur du texte "[ Valider ]"
+            m.write("[ Valider ]")
+        end
+        term.setCursorPos(1, #options + 2)
+        print("Appuyez sur Enter pour valider")
     end
 
     redraw()
@@ -67,9 +78,17 @@ function monitors_config.menu(monitors, options)
             end
         elseif event == "monitor_touch" then
             local side, x, y = p1, p2, p3
+            local executed = false
             if y >= 1 and y <= #options then
                 choice = y
                 redraw()
+            else
+                -- Vérifier si clic sur le bouton Valider
+                local mon = peripheral.wrap(side)
+                local w, h = mon.getSize()
+                if y == h and x >= w - 9 then
+                    return choice
+                end
             end
         end
     end
