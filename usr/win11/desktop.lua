@@ -1,5 +1,4 @@
 -- ========================/usr/win11/desktop.lua====================
-local UI = dofile("/usr/win11/ui.lua")
 local WM = dofile("/usr/win11/wm.lua")
 
 local Desktop = {}
@@ -14,6 +13,7 @@ local startOpen = false
 function Desktop.init()
     local self = {}
     local w, h = term.getSize()
+    local UI = __WIN11__.UI  -- récupère UI depuis __WIN11__
 
     local function launch(path, label)
         if fs.exists(path) then
