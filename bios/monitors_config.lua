@@ -1,6 +1,6 @@
 -- monitors_config.lua
 -- Gestion des monitors pour BIOS et OS
--- Rafraîchissement avant exécution
+-- Menu interactif, rafraîchissement écran, bouton Valider
 
 local monitors_config = {}
 
@@ -88,7 +88,7 @@ function monitors_config.menu(monitors, options)
                 if choice > #options then choice = 1 end
                 redraw()
             elseif p1 == keys.enter then
-                monitors_config.refreshScreen(monitors) -- <== Rafraîchissement avant sortie
+                monitors_config.refreshScreen(monitors)
                 return choice
             end
         elseif event == "monitor_touch" then
@@ -97,11 +97,10 @@ function monitors_config.menu(monitors, options)
                 choice = y
                 redraw()
             else
-                -- Vérifier si clic sur le bouton Valider
                 local mon = peripheral.wrap(side)
                 local w, h = mon.getSize()
                 if y == h and x >= w - 9 then
-                    monitors_config.refreshScreen(monitors) -- <== Rafraîchissement avant sortie
+                    monitors_config.refreshScreen(monitors)
                     return choice
                 end
             end
