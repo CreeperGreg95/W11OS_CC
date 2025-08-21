@@ -5,8 +5,10 @@
 -- Crée les dossiers nécessaires
 local function ensureDirs()
     local dirs = {"/usr", "/usr/win11", "/usr/win11/apps"}
-    for _,d in ipairs(dirs) do
-        if not fs.exists(d) then fs.makeDir(d) end
+    for _, d in ipairs(dirs) do
+        if not fs.exists(d) then
+            fs.makeDir(d)
+        end
     end
 end
 ensureDirs()
@@ -25,6 +27,9 @@ end
 
 -- Lancement du boot
 local ok, err = pcall(function()
-    dofile("/usr/win11/boot.lua")
+    dofile("/usr/win11/boot.lua")  -- <--- PAS de ()
 end)
-if not ok then panic(err) end
+
+if not ok then
+    panic(err)
+end
