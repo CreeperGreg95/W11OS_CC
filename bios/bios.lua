@@ -1,4 +1,4 @@
--- BIOS avec rafraîchissement écran
+-- BIOS avec rafraîchissement écran avant exécution
 
 local monitors_config = dofile("/bios/monitors_config.lua")
 local monitors = monitors_config.detectMonitors()
@@ -24,8 +24,10 @@ sleep(1)
 -- Menu démarrage
 local choice = monitors_config.menu(monitors, {"Lancer le shell", "Redémarrer", "Éteindre"})
 
--- Exécution
+-- Rafraîchissement avant exécution pour éviter superposition
 monitors_config.refreshScreen(monitors)
+
+-- Exécution
 if choice == 1 then
     monitors_config.writeAll(monitors, 1, "Lancement du shell...")
     sleep(0.5)
