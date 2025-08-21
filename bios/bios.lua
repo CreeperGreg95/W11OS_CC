@@ -1,36 +1,31 @@
--- BIOS complet pour CraftOS 1.8 avec support monitors et bouton Valider
+-- BIOS avec rafraîchissement écran
 
--- Charger la config monitors
 local monitors_config = dofile("/bios/monitors_config.lua")
-
--- Détecter les monitors
 local monitors = monitors_config.detectMonitors()
 
--- Nettoyage de l'écran local
-term.clear()
-term.setCursorPos(1,1)
-
--- Affichage splash screen
+-- Splash screen
+monitors_config.refreshScreen(monitors)
 monitors_config.writeAll(monitors, 1, "===================================")
 monitors_config.writeAll(monitors, 2, "      Windows 11 Alpha - BIOS")
 monitors_config.writeAll(monitors, 3, "         Initialisation")
 monitors_config.writeAll(monitors, 4, "===================================")
 sleep(1)
 
--- Affichage périphériques détectés
-monitors_config.writeAll(monitors, 6, "Détection périphériques...")
-for _, side in ipairs({"top","bottom","left","right","front","back"}) do
+-- Détection périphériques
+monitors_config.refreshScreen(monitors)
+monitors_config.writeAll(monitors, 1, "Détection périphériques...")
+for i, side in ipairs({"top","bottom","left","right","front","back"}) do
     if peripheral.isPresent(side) then
-        local t = peripheral.getType(side)
-        monitors_config.writeAll(monitors, 6 + _, " - "..t.." détecté sur "..side)
+        monitors_config.writeAll(monitors, 1 + i, " - "..peripheral.getType(side).." détecté sur "..side)
     end
 end
 sleep(1)
 
--- Menu de démarrage
+-- Menu démarrage
 local choice = monitors_config.menu(monitors, {"Lancer le shell", "Redémarrer", "Éteindre"})
 
 -- Exécution
+monitors_config.refreshScreen(monitors)
 if choice == 1 then
     monitors_config.writeAll(monitors, 1, "Lancement du shell...")
     sleep(0.5)

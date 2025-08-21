@@ -1,5 +1,5 @@
 -- monitors_config.lua
--- Gestion des monitors pour BIOS et OS (clic = déplacer, bouton Valider = exécuter)
+-- Gestion des monitors pour BIOS et OS (clic = déplacer, bouton Valider = exécuter, rafraîchissement écran)
 
 local monitors_config = {}
 
@@ -30,15 +30,23 @@ function monitors_config.writeAll(monitors, y, text)
     end
 end
 
+-- Efface tout et met à jour l'affichage (rafraîchissement)
+function monitors_config.refreshScreen(monitors)
+    term.clear()
+    term.setCursorPos(1,1)
+    for _, m in pairs(monitors) do
+        m.clear()
+        m.setCursorPos(1,1)
+    end
+end
+
 -- Menu interactif sur monitors et terminal
 -- Renvoie l'option sélectionnée (clic = déplacer, bouton Valider = exécuter)
 function monitors_config.menu(monitors, options)
     local choice = 1
 
     local function redraw()
-        term.clear()
-        term.setCursorPos(1,1)
-        for _, m in pairs(monitors) do m.clear() end
+        monitors_config.refreshScreen(monitors)
 
         -- Affichage des options
         for i, opt in ipairs(options) do
@@ -83,7 +91,6 @@ function monitors_config.menu(monitors, options)
             end
         elseif event == "monitor_touch" then
             local side, x, y = p1, p2, p3
-            local executed = false
             if y >= 1 and y <= #options then
                 choice = y
                 redraw()
