@@ -1,3 +1,0 @@
--- ==========================/usr/win11/config.lua===================
--- (Ce fichier est créé automatiquement si absent)
--- return { wallpaper = { bg = colors.lightBlue, accent = colors.blue }, taskbar = { autoHide=false, height=1 } }
