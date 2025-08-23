@@ -23,7 +23,7 @@ function menu.run(monitors)
     elseif choice == 2 then
         monitors_config.writeAll(monitors, 1, "Lancement du shell...")
         sleep(0.5)
-        shell.run("/rom/programs/shell.lua")
+        shell.run("shell")
 
     elseif choice == 3 then
         monitors_config.writeAll(monitors, 1, "Redémarrage...")
