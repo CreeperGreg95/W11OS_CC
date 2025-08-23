@@ -1,6 +1,6 @@
 -- menu.lua
 -- Gère l'affichage et l'exécution du menu de démarrage
--- Installer Version - Pastebin : 2.2.1
+-- Installer Version - Pastebin : 2.2.2
 
 local monitors_config = dofile("/bios/monitors_config.lua")
 
