@@ -13,8 +13,8 @@ function boot_manager.run(monitors)
         monitors_config.refreshScreen(monitors)
         monitors_config.writeAll(monitors, 1, "Aucun OS installé")
 
-        -- Menu avec uniquement "Retour"
-        local choice = monitors_config.menu(monitors, {"Retour"})
+        -- Menu avec uniquement "Retour", affiché plus bas
+        local choice = monitors_config.menu(monitors, {"Retour"}, 3) -- ligne de départ = 3
         if choice == 1 then
             local menu = dofile("/bios/menu.lua")
             menu.run(monitors)
@@ -42,7 +42,7 @@ function boot_manager.run(monitors)
         monitors_config.refreshScreen(monitors)
         monitors_config.writeAll(monitors, 1, "Démarrage de "..selectedOS.name.."...")
         sleep(1)
-        shell.run(selectedOS.path)
+        os.run({}, selectedOS.path) -- on utilise os.run pour éviter l’erreur
     end
 end
 

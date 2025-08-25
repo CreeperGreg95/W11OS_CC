@@ -1,6 +1,5 @@
 -- menu.lua
 -- Gère l'affichage et l'exécution du menu de démarrage
--- Installer Version - Pastebin : 2.2.2
 
 local monitors_config = dofile("/bios/monitors_config.lua")
 
@@ -8,14 +7,19 @@ local menu = {}
 
 function menu.run(monitors)
     -- Menu de démarrage
-    local choice = monitors_config.menu(monitors, {"Lancer le système d'exploitation", "Lancer le shell", "Redémarrer", "Éteindre"})
+    local choice = monitors_config.menu(monitors, {
+        "Lancer le système d'exploitation",
+        "Lancer le shell",
+        "Redémarrer",
+        "Éteindre"
+    })
 
     -- Exécution des choix
     monitors_config.refreshScreen(monitors)
 
     if choice == 1 then
         monitors_config.writeAll(monitors, 1, "Recherche des systèmes d'exploitation installés...")
-        sleep(5)
+        sleep(2)
         -- On lance le gestionnaire d’OS
         local boot_manager = dofile("/bios/boot_manager.lua")
         boot_manager.run(monitors)
@@ -23,7 +27,7 @@ function menu.run(monitors)
     elseif choice == 2 then
         monitors_config.writeAll(monitors, 1, "Lancement du shell...")
         sleep(0.5)
-        shell.run("/rom/programs/shell.lua")
+        os.run({}, "/rom/programs/shell.lua") -- ✅ remplace shell.run
 
     elseif choice == 3 then
         monitors_config.writeAll(monitors, 1, "Redémarrage...")
