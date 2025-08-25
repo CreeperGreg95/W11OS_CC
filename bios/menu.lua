@@ -27,7 +27,8 @@ function menu.run(monitors)
     elseif choice == 2 then
         monitors_config.writeAll(monitors, 1, "Lancement du shell...")
         sleep(0.5)
-        os.run({}, "/rom/programs/shell.lua") -- ✅ remplace shell.run
+        os.run({}, "/rom/programs/shell.lua")
+        return -- ✅ on arrête le BIOS après le shell
 
     elseif choice == 3 then
         monitors_config.writeAll(monitors, 1, "Redémarrage...")

@@ -43,8 +43,9 @@ end
 
 -- Menu interactif sur monitors et terminal
 -- Clic = déplacer, bouton Valider = exécuter
-function monitors_config.menu(monitors, options)
+function monitors_config.menu(monitors, options, y_offset)
     local choice = 1
+    y_offset = y_offset or 1  -- décalage vertical des options
 
     local function redraw()
         monitors_config.refreshScreen(monitors)
@@ -52,10 +53,10 @@ function monitors_config.menu(monitors, options)
         -- Affichage des options
         for i, opt in ipairs(options) do
             local line = (i == choice) and ("> "..opt) or ("  "..opt)
-            term.setCursorPos(1, i)
+            term.setCursorPos(1, y_offset + i - 1)
             print(line)
             for _, m in pairs(monitors) do
-                m.setCursorPos(1, i)
+                m.setCursorPos(1, y_offset + i - 1)
                 m.clearLine()
                 m.write(line)
             end
@@ -70,7 +71,7 @@ function monitors_config.menu(monitors, options)
         end
 
         -- Terminal local
-        term.setCursorPos(1, #options + 2)
+        term.setCursorPos(1, y_offset + #options + 1)
         print("[ Valider ] (Appuyez Enter pour valider)")
     end
 
@@ -93,8 +94,8 @@ function monitors_config.menu(monitors, options)
             end
         elseif event == "monitor_touch" then
             local side, x, y = p1, p2, p3
-            if y >= 1 and y <= #options then
-                choice = y
+            if y >= y_offset and y < y_offset + #options then
+                choice = y - y_offset + 1
                 redraw()
             else
                 local mon = peripheral.wrap(side)

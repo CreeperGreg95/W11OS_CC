@@ -8,18 +8,19 @@ local boot_manager = {}
 function boot_manager.run(monitors)
     local os_list = dofile("/bios/os_config/os_installed.lua")
 
-    -- Si aucun OS n’est installé
     if #os_list == 0 then
         monitors_config.refreshScreen(monitors)
         monitors_config.writeAll(monitors, 1, "Aucun OS installé")
 
         -- Menu avec uniquement "Retour", affiché plus bas
-        local choice = monitors_config.menu(monitors, {"Retour"}, 3) -- ligne de départ = 3
+        local choice = monitors_config.menu(monitors, {"Retour"}, 3)
         if choice == 1 then
             local menu = dofile("/bios/menu.lua")
             menu.run(monitors)
         end
         return
+    end
+
     end
 
     -- Sinon, construire la liste des OS installés
